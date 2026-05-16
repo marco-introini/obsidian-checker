@@ -1,7 +1,7 @@
 # obsidian-checker
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-00ADD8?logo=go)](https://go.dev)
+[![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.26-00ADD8?logo=go)](https://go.dev)
 
 A fast, extensible CLI tool for analyzing [Obsidian](https://obsidian.md) vaults
 and detecting issues like broken links, missing headings, and more.
