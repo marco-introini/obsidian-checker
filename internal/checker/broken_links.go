@@ -58,10 +58,10 @@ func (c *BrokenLinksChecker) Check(v *vault.Vault) ([]Issue, Summary, error) {
 
 				if isImage {
 					issue.Code = CodeFileNotFound
-					issue.Message = fmt.Sprintf("File '%s' non trovato", link.Target)
+					issue.Message = fmt.Sprintf("File '%s' not found", link.Target)
 				} else {
 					issue.Code = CodeNoteNotFound
-					issue.Message = fmt.Sprintf("Nota '%s' non trovata nel vault", link.Target)
+					issue.Message = fmt.Sprintf("Note '%s' not found in vault", link.Target)
 				}
 
 				issues = append(issues, issue)
@@ -76,7 +76,7 @@ func (c *BrokenLinksChecker) Check(v *vault.Vault) ([]Issue, Summary, error) {
 						RawLink: link.Raw,
 						Target:  link.Target + "#" + link.Heading,
 						Code:    "heading_not_found",
-						Message: fmt.Sprintf("Heading '#%s' non trovato in '%s'", link.Heading, resolved.TargetNote.RelPath),
+						Message: fmt.Sprintf("Heading '#%s' not found in '%s'", link.Heading, resolved.TargetNote.RelPath),
 					})
 				}
 			}

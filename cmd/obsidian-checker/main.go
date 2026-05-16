@@ -30,33 +30,33 @@ func main() {
 
 var rootCmd = &cobra.Command{
 	Use:   "obsidian-checker",
-	Short: "Strumento CLI per analizzare vault Obsidian",
-	Long: `obsidian-checker analizza un vault Obsidian per rilevare problemi
-e incoerenze come link rotti verso note inesistenti.`,
+	Short: "CLI tool for analyzing Obsidian vaults",
+	Long: `obsidian-checker scans an Obsidian vault to detect issues
+like broken links pointing to non-existent notes.`,
 }
 
 var checkCmd = &cobra.Command{
 	Use:   "check",
-	Short: "Esegue controlli sul vault",
+	Short: "Run checks on a vault",
 }
 
 var linksCmd = &cobra.Command{
 	Use:   "links [vault-path]",
-	Short: "Controlla i link rotti nel vault",
-	Long: `Analizza tutti i file markdown del vault e verifica che
-ogni wiki-link ([[...]]) punti a una nota o file esistente.`,
+	Short: "Check for broken links in the vault",
+	Long: `Scan all markdown files in the vault and verify
+every wiki-link ([[...]]) points to an existing note or file.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runCheckLinks,
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "File di configurazione (default: .obsidian-checker.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&outputFormat, "format", "f", "table", "Formato output: table, json, csv")
-	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Output minimale")
-	rootCmd.PersistentFlags().BoolVar(&checkHeadings, "check-headings", false, "Verifica heading referenziati")
-	rootCmd.PersistentFlags().BoolVar(&caseSensitive, "case-sensitive", false, "Forza risoluzione case-sensitive")
-	rootCmd.PersistentFlags().BoolVar(&caseInsensitive, "case-insensitive", false, "Forza risoluzione case-insensitive")
-	rootCmd.PersistentFlags().StringSliceVarP(&exclude, "exclude", "e", nil, "Directory aggiuntive da escludere")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Config file (default: .obsidian-checker.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&outputFormat, "format", "f", "table", "Output format: table, json, csv")
+	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output")
+	rootCmd.PersistentFlags().BoolVar(&checkHeadings, "check-headings", false, "Validate referenced headings")
+	rootCmd.PersistentFlags().BoolVar(&caseSensitive, "case-sensitive", false, "Force case-sensitive resolution")
+	rootCmd.PersistentFlags().BoolVar(&caseInsensitive, "case-insensitive", false, "Force case-insensitive resolution")
+	rootCmd.PersistentFlags().StringSliceVarP(&exclude, "exclude", "e", nil, "Additional directories to exclude")
 
 	checkCmd.AddCommand(linksCmd)
 	rootCmd.AddCommand(checkCmd)
@@ -72,7 +72,7 @@ func runCheckLinks(cmd *cobra.Command, args []string) error {
 
 	cfg, err := config.Load(cfgFile)
 	if err != nil {
-		return fmt.Errorf("errore caricamento configurazione: %w", err)
+		return fmt.Errorf("error loading configuration: %w", err)
 	}
 
 	cfg.VaultPath = vaultPath
@@ -93,23 +93,23 @@ func runCheckLinks(cmd *cobra.Command, args []string) error {
 	}
 
 	if !cfg.Quiet {
-		fmt.Fprintf(os.Stderr, "Scansione del vault: %s\n", cfg.VaultPath)
+		fmt.Fprintf(os.Stderr, "Scanning vault: %s\n", cfg.VaultPath)
 	}
 
 	v, err := vault.Scan(cfg.VaultPath, cfg.AllExcludeDirs(), cfg.ExcludePatterns)
 	if err != nil {
-		return fmt.Errorf("errore scansione vault: %w", err)
+		return fmt.Errorf("error scanning vault: %w", err)
 	}
 
 	if !cfg.Quiet {
-		fmt.Fprintf(os.Stderr, "Trovate %d note e %d allegati\n", len(v.Notes), len(v.Assets))
-		fmt.Fprintf(os.Stderr, "Analisi link in corso...\n")
+		fmt.Fprintf(os.Stderr, "Found %d notes and %d attachments\n", len(v.Notes), len(v.Assets))
+		fmt.Fprintf(os.Stderr, "Analyzing links...\n")
 	}
 
 	blChecker := checker.NewBrokenLinksChecker(cfg.IsCaseSensitive(), cfg.CheckHeadings)
 	issues, summary, err := blChecker.Check(v)
 	if err != nil {
-		return fmt.Errorf("errore controllo link: %w", err)
+		return fmt.Errorf("error checking links: %w", err)
 	}
 
 	var formatter output.Formatter
@@ -124,7 +124,7 @@ func runCheckLinks(cmd *cobra.Command, args []string) error {
 
 	out, err := formatter.Format(issues, summary)
 	if err != nil {
-		return fmt.Errorf("errore formattazione output: %w", err)
+		return fmt.Errorf("error formatting output: %w", err)
 	}
 
 	fmt.Print(out)

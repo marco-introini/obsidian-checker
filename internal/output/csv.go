@@ -33,7 +33,7 @@ func (f *CSVFormatter) Format(issues []checker.Issue, summary checker.Summary) (
 		return "", err
 	}
 
-	sb.WriteString(fmt.Sprintf("\n# Riepilogo: %d file, %d link, %d rotti\n", summary.TotalFiles, summary.TotalLinks, summary.IssueCount))
+	sb.WriteString(fmt.Sprintf("\n# Summary: %d files, %d links, %d broken\n", summary.TotalFiles, summary.TotalLinks, summary.IssueCount))
 
 	return sb.String(), nil
 }
